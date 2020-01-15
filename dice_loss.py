@@ -28,27 +28,32 @@ class Net(nn.Module):
     def forward(self, x):
         return self.fc2(self.fc(x))
 
-def test():
-    from sklearn.datasets import load_iris
-    from sklearn.model_selection import train_test_split
-    data = load_iris()
-    X = data['data']
-    y = data['target']
-    model = Net()
-    opti = torch.optim.Adam(model.parameters())
-    criterion = DiceLoss()
-    from torch.utils.data import TensorDataset, DataLoader
-    tx, cvx, ty, cvy = train_test_split(X, y, test_size=0.2)
-    train_loader = DataLoader(TensorDataset(torch.FloatTensor(tx), torch.LongTensor(ty)), batch_size=32)
-    dev_loader = DataLoader(TensorDataset(torch.FloatTensor(cvx), torch.LongTensor(cvy)), batch_size=32)
-    for i in range(100):
-        for train_x, train_y in train_loader:
-            output = model(train_x)
-            loss = criterion(output, train_y)
-            opti.zero_grad()
-            loss.backward()
-            opti.step()
-        for dev_x, dev_y in train_loader:
-            output = model(dev_x)
-            true_num = (output.argmax(dim=1) == dev_y).sum()
-        print(true_num)
+
+if __name__ == '__main__':
+
+    def test():
+        from sklearn.datasets import load_iris
+        from sklearn.model_selection import train_test_split
+        data = load_iris()
+        X = data['data']
+        y = data['target']
+        model = Net()
+        opti = torch.optim.Adam(model.parameters())
+        criterion = DiceLoss()
+        from torch.utils.data import TensorDataset, DataLoader
+        tx, cvx, ty, cvy = train_test_split(X, y, test_size=0.2)
+        train_loader = DataLoader(TensorDataset(torch.FloatTensor(tx), torch.LongTensor(ty)), batch_size=32)
+        dev_loader = DataLoader(TensorDataset(torch.FloatTensor(cvx), torch.LongTensor(cvy)), batch_size=32)
+        for i in range(100):
+            for train_x, train_y in train_loader:
+                output = model(train_x)
+                loss = criterion(output, train_y)
+                opti.zero_grad()
+                loss.backward()
+                opti.step()
+            for dev_x, dev_y in train_loader:
+                output = model(dev_x)
+                true_num = (output.argmax(dim=1) == dev_y).sum()
+            print(true_num)
+            
+    test()
