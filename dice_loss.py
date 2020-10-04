@@ -50,8 +50,7 @@ class DiceLoss(nn.Module):
         shape = y_pred.shape
         num_labels = shape[1]
         dims = [i for i in range(len(y_pred.shape))]
-        # print(dims)
-        dims[1], dims[-1] = dims[-1], dims[1]
+        dims.insert(1, len(dims))
         y_pred = torch.softmax(y_pred, dim=1)
         y_true = F.one_hot(y_true, num_classes=num_labels).permute(*dims)
         loss = self.binary_dice_loss(y_pred, y_true, reduction)
